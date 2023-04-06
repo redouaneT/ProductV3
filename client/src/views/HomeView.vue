@@ -10,7 +10,7 @@
 							revolutionize the way you live, work, and play. Stay tuned for the
 							big reveal!
 						</p>
-						<router-link to="/product" class="btn btn-primary">
+						<router-link to="/products" class="btn btn-primary">
 							See our products
 						</router-link>
 					</div>

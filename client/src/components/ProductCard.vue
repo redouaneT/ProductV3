@@ -2,7 +2,7 @@
 	<div class="card h-100">
 		<img
 			class="card-img-top product-image"
-			src="{{ product.img_url }}"
+			:src="product.img_url"
 			alt="Product"
 		/>
 
@@ -15,13 +15,12 @@
 				<br />
 				Category: {{ product.category }}
 			</p>
-			<button
-				@click="$emit('update', product.id)"
-				type="button"
+			<router-link
+				:to="{ name: 'update-product', params: { id: product.id } }"
 				class="btn btn-custom btn-info-custom"
 			>
 				Update
-			</button>
+			</router-link>
 			<button
 				@click="$emit('delete', product.id)"
 				type="button"
@@ -37,6 +36,7 @@
 export default {
 	props: {
 		product: Object,
+		delete: Function,
 	},
 	methods: {},
 }

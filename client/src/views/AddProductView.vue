@@ -1,73 +1,171 @@
 <template>
-	<div>
-		<div class="container">
-			<div class="row">
-				<div class="col-md-12">
-					<h2>Add Product</h2>
-					<form @submit.prevent="onAddProduct">
-						<div class="form-group">
-							<label for="productName">Name</label>
-							<input
-								type="text"
-								class="form-control"
-								id="productName"
-								:value="product.name"
-								@input="updateProduct('name', $event.target.value)"
-								placeholder="Enter product name"
-							/>
+	<div class="product-add">
+		<!-- Section-->
+		<section class="py-5">
+			<div class="container px-4 px-lg-5 mt-5">
+				<div
+					class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-2 justify-content-center"
+				>
+					<div class="col-sm-12">
+						<h4 class="mb-3">Add new product</h4>
+						<div class="alert alert-danger" v-show="message">{{ message }}</div>
+						<div class="needs-validation" novalidate>
+							<div class="row g-2">
+								<div v-if="!submitted">
+									<div class="col-12">
+										<label for="productName" class="form-label"
+											>Product Name</label
+										>
+										<input
+											type="text"
+											class="form-control"
+											id="productName"
+											placeholder=""
+											v-model="product.name"
+											required
+										/>
+										<div class="invalid-feedback">Valid name is required.</div>
+									</div>
+									<div class="col-12">
+										<label for="productPhoto" class="form-label"
+											>Product Photo</label
+										>
+										<input
+											type="text"
+											class="form-control"
+											id="productPhoto"
+											placeholder=""
+											v-model="product.img_url"
+											required
+										/>
+										<div class="invalid-feedback">
+											Valid photo path is required.
+										</div>
+									</div>
+									<div class="col-12">
+										<label for="productPrice" class="form-label">Price</label>
+										<div class="input-group has-validation">
+											<span class="input-group-text">CAD</span>
+											<input
+												type="text"
+												class="form-control"
+												id="productPrice"
+												placeholder=""
+												v-model.number="product.price"
+												required
+											/>
+											<div class="invalid-feedback">Price is required.</div>
+										</div>
+									</div>
+									<div class="col-12">
+										<label for="productDescription" class="form-label"
+											>Product Description</label
+										>
+										<textarea
+											class="form-control"
+											id="productDescription"
+											placeholder=""
+											v-model="product.description"
+										></textarea>
+										<div class="invalid-feedback">Valid description</div>
+									</div>
+									<div class="col-12">
+										<label for="productType" class="form-label"
+											>Product Category</label
+										>
+										<select
+											class="form-control"
+											id="productType"
+											placeholder=""
+											v-model="product.type"
+											required
+										>
+											<option value="">Select</option>
+											<option value="1">Category1</option>
+											<option value="2">Category2</option>
+											<option value="3">Category3</option>
+										</select>
+										<div class="invalid-feedback">
+											Valid photo path is required.
+										</div>
+									</div>
+									<button
+										class="w-100 btn btn-secondary btn-lg mt-3"
+										type="button"
+										@click="saveProduct"
+									>
+										Save
+									</button>
+								</div>
+								<div v-else>
+									<div
+										class="alert alert-success alert-dismissible fade show"
+										role="alert"
+									>
+										<strong> You submitted successfully!</strong>
+										<button
+											type="button"
+											class="btn-close"
+											data-bs-dismiss="alert"
+											aria-label="Close"
+										></button>
+									</div>
+									<button
+										class="w-100 btn btn-success btn-lg mt-3"
+										type="button"
+										@click="newProduct"
+									>
+										New product
+									</button>
+								</div>
+								<hr class="my-4" />
+							</div>
 						</div>
-						<div class="form-group">
-							<label for="productDescription">Description</label>
-							<input
-								type="text"
-								class="form-control"
-								id="productDescription"
-								:value="product.description"
-								@input="updateProduct('description', $event.target.value)"
-								placeholder="Enter product description"
-							/>
-						</div>
-						<div class="form-group">
-							<label for="productPrice">Price</label>
-							<input
-								type="number"
-								class="form-control"
-								id="productPrice"
-								:value="product.price"
-								@input="updateProduct('price', $event.target.value)"
-								placeholder="Enter product price"
-							/>
-						</div>
-						<div class="form-group">
-							<label for="productCategory">Category</label>
-							<select
-								class="form-control"
-								id="productCategory"
-								:value="product.category"
-								@input="updateProduct('category', $event.target.value)"
-							>
-								<option value="">Select a category</option>
-								<option value="Category 1">Category 1</option>
-								<option value="Category 2">Category 2</option>
-								<option value="Category 3">Category 3</option>
-							</select>
-						</div>
-						<button type="submit" class="btn btn-primary">Add Product</button>
-					</form>
+					</div>
 				</div>
 			</div>
-		</div>
+		</section>
 	</div>
 </template>
 
 <script>
+// import ProductDataService from "@/services/ProductDataService"
 export default {
-	props: {
-		product: Object,
+	props: ["addInv"],
+	data() {
+		return {
+			message: null,
+			submitted: false,
+			product: {
+				name: "",
+				photo: "",
+				price: "",
+				description: "",
+				type: "",
+			},
+		}
 	},
 	methods: {
-		onAddProduct() {
-			this.$emit("submit-add")
+		saveProduct() {
+			// ProductDataService.create(this.product)
+			// 	.then((response) => {
+			// 		// console.log(response.data)
+			// 		this.product.id = response.data.id
+			// 		this.addInv(this.product)
+			// 		this.message = null
+			// 		this.submitted = true
+			// 		// this.$router.push({ name: 'home' })
+			// 		// console.log(this.submitted)
+			// 	})
+			// 	.catch((e) => {
+			// 		console.log(e.response.data.message)
+			// 		this.message = e.response.data.message
+			// 	})
+			console.log("save product : ", this.product)
+		},
+		newProduct() {
+			this.submitted = false
+			this.product = {}
 		},
 	},
 }
