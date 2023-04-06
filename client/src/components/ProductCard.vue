@@ -11,9 +11,9 @@
 			<p class="card-text">
 				{{ product.description }}
 				<br />
-				Price: $ {{ product.price.toFixed(2) }}
+				Price: $ {{ product.price }}
 				<br />
-				Category: {{ product.category }}
+				Category: {{ product.category_id }}
 			</p>
 			<router-link
 				:to="{ name: 'update-product', params: { id: product.id } }"

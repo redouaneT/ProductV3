@@ -77,13 +77,17 @@
 											class="form-control"
 											id="productType"
 											placeholder=""
-											v-model="product.type"
+											v-model="product.category_id"
 											required
 										>
-											<option value="">Select</option>
-											<option value="1">Category1</option>
-											<option value="2">Category2</option>
-											<option value="3">Category3</option>
+											<option value="" selected>Select</option>
+											<option
+												v-for="category in categories"
+												:value="category.id"
+												:key="category.id"
+											>
+												{{ category.name }}
+											</option>
 										</select>
 										<div class="invalid-feedback">
 											Valid photo path is required.
@@ -117,6 +121,12 @@
 									>
 										New product
 									</button>
+									<router-link
+										to="/products"
+										class="w-100 btn btn-primary btn-lg mt-3"
+									>
+										Go back to products
+									</router-link>
 								</div>
 								<hr class="my-4" />
 							</div>
@@ -129,44 +139,67 @@
 </template>
 
 <script>
-// import ProductDataService from "@/services/ProductDataService"
+import ProductDataService from "@/services/ProductDataService"
+import CategoryDataService from "@/services/CategoryDataService"
 export default {
-	props: ["addInv"],
 	data() {
 		return {
-			message: null,
-			submitted: false,
 			product: {
 				name: "",
-				photo: "",
+				img_url: "",
 				price: "",
 				description: "",
-				type: "",
+				category_id: "",
 			},
+			categories: {},
+			message: "",
+			submitted: false,
 		}
 	},
 	methods: {
 		saveProduct() {
-			// ProductDataService.create(this.product)
-			// 	.then((response) => {
-			// 		// console.log(response.data)
-			// 		this.product.id = response.data.id
-			// 		this.addInv(this.product)
-			// 		this.message = null
-			// 		this.submitted = true
-			// 		// this.$router.push({ name: 'home' })
-			// 		// console.log(this.submitted)
-			// 	})
-			// 	.catch((e) => {
-			// 		console.log(e.response.data.message)
-			// 		this.message = e.response.data.message
-			// 	})
-			console.log("save product : ", this.product)
+			if (!this.validateForm()) {
+				return
+			}
+			ProductDataService.create(this.product)
+				.then(() => {
+					this.message = null
+					this.submitted = true
+				})
+				.catch((e) => {
+					console.log(e.response.data.message)
+					this.message = e.response.data.message
+				})
+		},
+		validateForm() {
+			if (this.product.name.length < 3) {
+				this.message = "Product name should be at least 3 characters long."
+				return false
+			}
+			if (!this.product.img_url.startsWith("http")) {
+				this.message = "Please enter a valid photo URL."
+				return false
+			}
+			if (this.product.price === "") {
+				console.log(this.product.price)
+				this.message = "Please enter a valid price."
+				return false
+			}
+			if (this.product.category_id === "") {
+				this.message = "Please select a category."
+				return false
+			}
+			return true
 		},
 		newProduct() {
 			this.submitted = false
 			this.product = {}
 		},
+	},
+	mounted() {
+		CategoryDataService.getAll().then((response) => {
+			this.categories = response.data
+		})
 	},
 }
 </script>

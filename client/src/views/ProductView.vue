@@ -20,7 +20,11 @@
 					:key="product.id"
 					class="col-md-4 col-sm-6 col-xs-12 mb-4"
 				>
-					<ProductCard :product="product" @delete="handleDeleteProduct" />
+					<ProductCard :product="product" @delete="DeleteProduct" />
+				</div>
+				<div v-if="products.length === 0" class="col-12 text-center">
+					<h3 class="mt-4 mb-4">No products available.</h3>
+					<p>Please click the "Add Product" button to add new products.</p>
 				</div>
 			</div>
 		</div>
@@ -29,6 +33,7 @@
 
 <script>
 import ProductCard from "@/components/ProductCard.vue"
+import ProductDataService from "@/services/ProductDataService"
 
 export default {
 	components: {
@@ -36,45 +41,24 @@ export default {
 	},
 	data() {
 		return {
-			products: [
-				{
-					id: 1,
-					name: "Product 1",
-					description: "This is a product",
-					price: 10.99,
-					category: "Category 1",
-					img_url: "https://picsum.photos/200/300",
-				},
-				{
-					id: 2,
-					name: "Product 1",
-					description: "This is a product",
-					price: 10.99,
-					category: "Category 1",
-					img_url: "https://picsum.photos/200/300",
-				},
-				{
-					id: 3,
-					name: "Product 1",
-					description: "This is a product",
-					price: 10.99,
-					category: "Category 1",
-					img_url: "https://picsum.photos/200/300",
-				},
-				// Add more products as needed
-			],
+			products: {},
 		}
 	},
 	methods: {
-		handleDeleteProduct(productId) {
+		DeleteProduct(id) {
 			// Handle delete product event
-			// ProductDataService.delete(this.id).then((response) => {
-			// 	this.removeInv(this.productIndex)
-			// 	this.remItem(this.product.name)
-			// 	this.$router.push({ name: "home" })
-			// })
-			console.log("delete the product with id =" + productId)
+			ProductDataService.delete(id).then((response) => {
+				this.products = this.products.filter((product) => product.id !== id)
+				this.$router.push({ name: "products" })
+				console.log(response)
+			})
+			console.log("delete the product" + id)
 		},
+	},
+	mounted() {
+		ProductDataService.getAll().then((response) => {
+			this.products = response.data
+		})
 	},
 }
 </script>

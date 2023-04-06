@@ -1,5 +1,5 @@
 <template>
-	<div class="product-add">
+	<div class="product-update">
 		<!-- Section-->
 		<section class="py-5">
 			<div class="container px-4 px-lg-5 mt-5">
@@ -7,7 +7,7 @@
 					class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-2 justify-content-center"
 				>
 					<div class="col-sm-12">
-						<h4 class="mb-3">Update Product</h4>
+						<h4 class="mb-3">Update product</h4>
 						<div class="alert alert-danger" v-show="message">{{ message }}</div>
 						<div class="needs-validation" novalidate>
 							<div class="row g-2">
@@ -35,7 +35,7 @@
 											class="form-control"
 											id="productPhoto"
 											placeholder=""
-											v-model="product.photo"
+											v-model="product.img_url"
 											required
 										/>
 										<div class="invalid-feedback">
@@ -71,20 +71,25 @@
 									</div>
 									<div class="col-12">
 										<label for="productType" class="form-label"
-											>Product Type</label
+											>Product Category</label
 										>
 										<select
 											class="form-control"
 											id="productType"
 											placeholder=""
-											v-model="product.type"
+											v-model="product.category_id"
 											required
 										>
 											<option value="">Select</option>
-											<option value="1">Category1</option>
-											<option value="2">Category2</option>
-											<option value="3">Category3</option>
+											<option
+												v-for="category in categories"
+												:value="category.id"
+												:key="category.id"
+											>
+												{{ category.name }}
+											</option>
 										</select>
+
 										<div class="invalid-feedback">
 											Valid photo path is required.
 										</div>
@@ -110,6 +115,19 @@
 											aria-label="Close"
 										></button>
 									</div>
+									<button
+										class="w-100 btn btn-success btn-lg mt-3"
+										type="button"
+										@click="updateProduct"
+									>
+										New product
+									</button>
+									<router-link
+										to="/products"
+										class="w-100 btn btn-primary btn-lg mt-3"
+									>
+										Go back to products
+									</router-link>
 								</div>
 								<hr class="my-4" />
 							</div>
@@ -122,46 +140,59 @@
 </template>
 
 <script>
-// import ProductDataService from "@/services/ProductDataService"
+import ProductDataService from "@/services/ProductDataService"
+import CategoryDataService from "@/services/CategoryDataService"
+
 export default {
-	props: ["inventory", "removeInv", "remItem", "updateInv"],
 	data() {
 		return {
-			message: null,
+			product: {
+				name: "",
+				img_url: "",
+				price: "",
+				description: "",
+				category_id: "",
+			},
+			categories: {},
+			message: "",
 			submitted: false,
-			product: {},
 			id: parseInt(this.$route.params.id),
 		}
 	},
 	methods: {
 		updateProduct() {
-			// ProductDataService.update(this.id, this.product).then((response) => {
-			// 	this.updateInv(this.productIndex, this.product)
-			// 	this.submitted = true
-			// })
-			console.log("update :", this.product)
+			if (!this.validateForm()) {
+				return
+			}
+
+			ProductDataService.update(this.id, this.product)
+				.then(() => {
+					this.submitted = true
+					console.log(this.product)
+				})
+				.catch((error) => {
+					this.message = error.response.data.message
+				})
 		},
-		deleteProduct() {
-			// ProductDataService.delete(this.id).then((response) => {
-			// 	this.removeInv(this.productIndex)
-			// 	this.remItem(this.product.name)
-			// 	this.$router.push({ name: "home" })
-			// })
-			console.log("delete :", this.product)
-		},
-	},
-	computed: {
-		productIndex() {
-			const index = this.inventory.findIndex((p) => {
-				return p.id === this.id
-			})
-			return index
+		validateForm() {
+			if (this.product.name.length < 3) {
+				this.message = "Product name should be at least 3 characters long."
+				return false
+			}
+			if (!this.product.img_url.startsWith("http")) {
+				this.message = "Please enter a valid photo URL."
+				return false
+			}
+			return true
 		},
 	},
 	mounted() {
-		// ProductDataService.get(this.id).then((response) => {
-		// 	this.product = response.data
-		// })
+		ProductDataService.get(this.id).then((response) => {
+			this.product = response.data
+		})
+		CategoryDataService.getAll().then((response) => {
+			this.categories = response.data
+		})
 	},
 }
 </script>
