@@ -13,7 +13,7 @@
 				<br />
 				Price: $ {{ product.price }}
 				<br />
-				Category: {{ product.category_id }}
+				Category: {{ categoryName }}
 			</p>
 			<router-link
 				:to="{ name: 'update-product', params: { id: product.id } }"
@@ -36,9 +36,22 @@
 export default {
 	props: {
 		product: Object,
-		delete: Function,
+		categories: {
+			type: Array,
+			default: () => [],
+		},
 	},
-	methods: {},
+	computed: {
+		categoryName() {
+			const category = this.categories.find(
+				(category) => category.id === this.product.category_id
+			)
+			return category ? category.name : "Unknown"
+		},
+	},
+	mounted() {
+		console.log(this.categories)
+	},
 }
 </script>
 

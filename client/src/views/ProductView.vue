@@ -20,7 +20,11 @@
 					:key="product.id"
 					class="col-md-4 col-sm-6 col-xs-12 mb-4"
 				>
-					<ProductCard :product="product" @delete="DeleteProduct" />
+					<ProductCard
+						:product="product"
+						:categories="categories"
+						@delete="DeleteProduct"
+					/>
 				</div>
 				<div v-if="products.length === 0" class="col-12 text-center">
 					<h3 class="mt-4 mb-4">No products available.</h3>
@@ -34,6 +38,7 @@
 <script>
 import ProductCard from "@/components/ProductCard.vue"
 import ProductDataService from "@/services/ProductDataService"
+import CategoryDataService from "@/services/CategoryDataService"
 
 export default {
 	components: {
@@ -41,7 +46,8 @@ export default {
 	},
 	data() {
 		return {
-			products: {},
+			products: [],
+			categories: [],
 		}
 	},
 	methods: {
@@ -58,6 +64,10 @@ export default {
 	mounted() {
 		ProductDataService.getAll().then((response) => {
 			this.products = response.data
+		})
+
+		CategoryDataService.getAll().then((response) => {
+			this.categories = response.data
 		})
 	},
 }
